@@ -172,18 +172,7 @@ public class SWTLoader
 		String name = System.getProperty("os.name").toLowerCase();
 		Matcher match = Pattern.compile("(win|mac|linux)").matcher(name);
 
-		if (match.find()) {
-			switch (match.group()) {
-				case "mac":
-					return "macOS";
-
-				default:
-					return match.group();
-			}
-		}
-
-		else
-			return name;
+		return (match.find()) ? match.group() : name;
 	}
 
   private static String getSwtJarName() throws SWTLoadFailed

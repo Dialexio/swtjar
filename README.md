@@ -6,7 +6,7 @@ I made a small edit to allow adding multiple architectures for Linux. I don't im
 
 SWT filenames should be named as such:
 * Linux: `swt-linux-{ARCH}-{SWT VERSION}.jar`
-* Mac: `swt-macOS-x86_64-{SWT VERSION}.jar`
+* Mac: `swt-mac-x86_64-{SWT VERSION}.jar`
 * Windows: `swt-win-{ARCH}-{SWT VERSION}.jar`
 
 For the architecture, `i386` and `x86` are treated as synonyms. In addition, `x86-64`, `x86_64`, and `amd64` are also synonyms for each other.
