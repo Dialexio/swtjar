@@ -101,23 +101,19 @@ public class SWTLoader
     }
   }
 
-  private static Manifest getSWTLoaderManifest() throws IOException
-  {
-    Class<?> clazz = SWTLoader.class;
-    String className = clazz.getSimpleName() + ".class";
-    String classPath = clazz.getResource(className).toString();
-    if (!classPath.startsWith("jar"))
-    {
-      // Class not from JAR
-      return null;
-    }
-    else
-    {
-      String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) +
-                            "/META-INF/MANIFEST.MF";
-      return new Manifest(new URL(manifestPath).openStream());
-    }
-  }
+	private static Manifest getSWTLoaderManifest() throws IOException {
+		Class<?> clazz = SWTLoader.class;
+		String className = clazz.getSimpleName() + ".class";
+		String classPath = clazz.getResource(className).toString();
+
+		if (classPath.startsWith("jar")) {
+			return new Manifest(new URL(classPath.substring(0, classPath.lastIndexOf("!") + 1) +
+				"/META-INF/MANIFEST.MF").openStream());
+		}
+
+		else
+			return null; // Class not from JAR
+	}
 
   private static void loadConfig() throws SWTLoadFailed
   {
@@ -163,6 +159,7 @@ public class SWTLoader
 				return "x86";
 
 			case "amd64":
+			case "x86-64":
 			case "x86_64":
 				return "x86_64";
 
