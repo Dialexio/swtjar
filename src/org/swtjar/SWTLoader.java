@@ -178,7 +178,7 @@ public class SWTLoader
   private static String getSwtJarName() throws SWTLoadFailed
   {
     // If OS is unknown, throw an exception.
-    if (getOS().equals("linux") == false || getOS().equals("mac") == false || getOS().equals("win") == false)
+    if (getOS().equals("linux") == false && getOS().equals("mac") == false && getOS().equals("win") == false)
     {
       throw new SWTLoadFailed("Unknown OS name: " + getOS());
     }
