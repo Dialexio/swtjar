@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.*;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -53,16 +54,20 @@ public class SWTLoader
           if (th instanceof UnsatisfiedLinkError)
           {
             UnsatisfiedLinkError linkError = (UnsatisfiedLinkError)th;
-            String errorMessage = "(UnsatisfiedLinkError: " + linkError.getMessage() + ")";
-            String arch = getArch();
-            if ("32".equals(arch))
-            {
-              errorMessage += "\nTry adding '-d64' to your command line arguments";
-            }
-            else if ("64".equals(arch))
-            {
-              errorMessage += "\nTry adding '-d32' to your command line arguments";
-            }
+            String errorMessage = "(UnsatisfiedLinkError: " + linkError.getMessage() + ')';
+
+			switch (getArch()) {
+				case "amd64":
+				case "ppc64":
+				case "x86_64":
+					errorMessage += "\nTry adding '-d32' to your command line arguments";
+					break;
+	
+				default:
+					errorMessage += "\nTry adding '-d64' to your command line arguments";
+					break;
+    		}
+
             throw new SWTLoadFailed(errorMessage);
           }
           else if ((th.getMessage() != null) &&
@@ -149,33 +154,53 @@ public class SWTLoader
     }
   }
 
-  private static String getArch()
-  {
-    // Detect 32bit vs 64 bit
-    String jvmArch = System.getProperty("os.arch").toLowerCase();
-    String arch = (jvmArch.contains("64") ? "64" : "32");
-    return arch;
-  }
+	private static String getArch() {
+		String arch = System.getProperty("os.arch");
+
+		switch (arch) {
+			case "i386":
+			case "x86":
+				return "x86";
+
+			case "amd64":
+			case "x86_64":
+				return "x86_64";
+
+			default:
+				return arch;
+		}
+	}
+
+	private static String getOS() {
+		String name = System.getProperty("os.name").toLowerCase();
+		Matcher match = Pattern.compile("(win|mac|linux)").matcher(name);
+
+		if (match.find()) {
+			switch (match.group()) {
+				case "mac":
+					return "macOS";
+
+				default:
+					return match.group();
+			}
+		}
+
+		else
+			return name;
+	}
 
   private static String getSwtJarName() throws SWTLoadFailed
   {
-    // Detect OS
-    String osName = System.getProperty("os.name").toLowerCase();
-    String swtFileNameOsPart = osName.contains("win") ? "win" : osName
-        .contains("mac") ? "osx" : osName.contains("linux")
-        || osName.contains("nix") ? "linux" : "";
-    if ("".equals(swtFileNameOsPart))
+    // If OS is unknown, throw an exception.
+    if (getOS().equals("linux") == false || getOS().equals("mac") == false || getOS().equals("win") == false)
     {
-      throw new SWTLoadFailed("Unknown OS name: " + osName);
+      throw new SWTLoadFailed("Unknown OS name: " + getOS());
     }
-
-    // Detect 32bit vs 64 bit
-    String swtFileNameArchPart = getArch();
 
     // Generate final filename
     String swtFileName = "swt-" +
-                         swtFileNameOsPart +
-                         swtFileNameArchPart +
+                         getOS() +
+                         getArch() +
                          "-" +
                          sSwtVersion +
                          ".jar";
