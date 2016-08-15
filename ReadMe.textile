@@ -1,2 +1,0 @@
-Full details available on the "SWTJar Site":http://mchr3k.github.com/swtjar/
-
